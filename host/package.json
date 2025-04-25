@@ -7,7 +7,7 @@
     "build": "webpack --config webpack.prod.js"
   },
   "keywords": [],
-  "author": "atul <atkr5496@gmail.com> (https://atul.info/)",
+  "author": "atul",
   "license": "ISC",
   "description": "",
   "dependencies": {

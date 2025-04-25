@@ -1,28 +1,31 @@
-# Module Federation Webpack Kit
+# 🔗 Module Federation Webpack Kit
 
-A boilerplate setup for **Module Federation** using **Webpack**, designed for building **micro-frontend** architectures. This kit comes with configurations for both **host** and **remote** applications to help you quickly get started with sharing modules dynamically between different React applications.
+![Banner](screenshots/banner.png)
+
+A boilerplate setup for **Module Federation** using **Webpack**, designed for building scalable **micro-frontend** architectures. This kit provides a complete setup for both **host** and **remote** applications to share React components dynamically.
 
 ## 🚀 Features
 
-- **Webpack 5** Module Federation Setup: Easily configure and manage micro-frontends.
-- **React & TypeScript**: Full integration with React and TypeScript, including type definitions for modules.
-- **Hot Module Replacement (HMR)**: Integrated with React Fast Refresh for a smooth development experience.
-- **Multiple Apps**: Easily switch between different configurations for both **host** and **remote** apps.
-- **Production-Ready**: Optimized for production builds with features like code splitting, minification, and more.
+- 🎯 **Webpack 5** with Module Federation: Seamless sharing of code across independent apps.
+- ⚛️ **React + TypeScript**: Fully typed setup with React best practices.
+- 🔥 **Hot Module Replacement**: Built-in React Fast Refresh for blazing-fast development.
+- 🧩 **Multiple Environments**: Easily configure **development**, **staging**, and **production**.
+- 🛡️ **Secured Remote Access**: Protects remote modules with custom Express middleware.
+- 📦 **Optimized Builds**: Production-ready with tree shaking, minification, and code splitting.
 
 ---
 
 ## 🛠️ Prerequisites
 
-Ensure you have the following installed on your system:
+Make sure you have the following installed:
 
-- **Node.js** (v20 or later)
+- [Node.js](https://nodejs.org/) (v20 or higher)
 
 ---
 
 ## 📦 Installation
 
-1. **Clone the repository**
+1. **Clone the repo**
 
 ```bash
 git clone https://github.com/your-username/module-federation-webpack-kit.git
@@ -41,11 +44,9 @@ pnpm install
 
 ## ⚡️ Development
 
-This kit has a **host** and a **remote** application with pre-configured **Module Federation** settings. You can run both applications concurrently to see the dynamic sharing of modules.
+This project includes a **host** and a **remote** application with pre-configured **Module Federation** settings. You can run both to see them working together!
 
-### 1. **Run the Host Application**
-
-The **host** application will serve as the main app that consumes modules exposed by the **remote** app.
+### 🧑‍✈️ Run the Host App
 
 ```bash
 npm run start:host
@@ -53,11 +54,9 @@ npm run start:host
 pnpm start:host
 ```
 
-This will run the **host** application on [http://localhost:3000](http://localhost:3000).
+> 🌐 Runs on [http://localhost:3000](http://localhost:3000)
 
-### 2. **Run the Remote Application**
-
-The **remote** application exposes React components that can be consumed by the **host** application.
+### 🛰️ Run the Remote App
 
 ```bash
 npm run start:remote
@@ -65,56 +64,88 @@ npm run start:remote
 pnpm start:remote
 ```
 
-This will run the **remote** application on [http://localhost:3001](http://localhost:3001).
+> 🌐 Runs on [http://localhost:3001](http://localhost:3001)
 
 ---
 
-## 🔧 Webpack Configuration
+## 🔐 Securing Remote App Access
 
-### `webpack.common.ts`
+The remote app is served using an **Express** server that includes customizable **middleware** for security. This ensures only authorized access to your exposed modules.
 
-Contains common configurations shared between **host** and **remote** applications.
+🔒 Middleware can be configured to:
 
-### `webpack.dev.ts`
+- ✅ Allowlist specific hosts
+- 🪪 Require auth tokens
+- 🌍 Restrict by environment or IP
+- 🛑 Block unwanted requests before serving federated modules
 
-Development-specific configurations. This includes the **Module Federation** setup, React Fast Refresh, and HMR for a smooth development experience.
+Example logic is in `server.js`. Modify it to suit your team’s needs!
 
-### `webpack.prod.ts`
+---
 
-Production-specific configurations, including optimizations like code splitting, tree shaking, and production-level minification.
+## 🔧 Webpack Configs
 
-### `ModuleFederationPlugin`
+### 📁 `webpack.common.ts`
 
-The **ModuleFederationPlugin** is used in both the **host** and **remote** applications. Below is an example of how it is used to expose and consume modules.
+Shared config used by both host and remote.
 
-**Remote Application**:
+### 🧪 `webpack.dev.ts`
+
+Development-only config:
+
+- HMR
+- Fast Refresh
+- Source maps
+
+### 🏗️ `webpack.prod.ts`
+
+Production config:
+
+- Minification
+- Tree shaking
+- Module federation
+
+### 🧬 `ModuleFederationPlugin` Usage
+
+**Remote App**
 
 ```ts
 new ModuleFederationPlugin({
-  name: 'remoteApp',
+  name: "remoteApp",
+  filename: "remoteEntry.js",
   exposes: {
-    './RemoteComponent': './src/components/RemoteComponent',
+    "./RemoteComponent": "./src/components/RemoteComponent",
   },
   shared: {
     react: { singleton: true, eager: true, requiredVersion: deps.react },
-    'react-dom': { singleton: true, eager: true, requiredVersion: deps['react-dom'] },
+    "react-dom": {
+      singleton: true,
+      eager: true,
+      requiredVersion: deps["react-dom"],
+    },
   },
-}),
+});
 ```
 
-**Host Application**:
+**Host App**
 
 ```ts
 const RemoteComponent = React.lazy(() => import("remoteApp/RemoteComponent"));
 ```
 
+Use it like this:
+
+```tsx
+<Suspense fallback={<div>Loading Remote Component...</div>}>
+  <RemoteComponent />
+</Suspense>
+```
+
 ---
 
-## 🔨 Build for Production
+## 🏗️ Building for Production
 
-You can build both the **host** and **remote** applications for production using the following commands:
-
-### Build Host Application:
+### Build the Host
 
 ```bash
 npm run build:host
@@ -122,7 +153,7 @@ npm run build:host
 pnpm build:host
 ```
 
-### Build Remote Application:
+### Build the Remote
 
 ```bash
 npm run build:remote
@@ -130,52 +161,62 @@ npm run build:remote
 pnpm build:remote
 ```
 
-This will generate production-ready bundles inside the `dist` directory.
+> Outputs go to the `dist/` directory.
+
+---
+
+## 🌐 Environment Modes
+
+You can build apps for multiple environments (e.g. `development`, `staging`, `production`) using custom `NODE_ENV` values.
+
+Example for staging:
+
+```json
+"build:staging": "NODE_ENV=staging webpack --config webpack.config.js --mode production"
+```
+
+Staging runs in **production mode** to reflect real behavior but uses separate configs or env variables.
 
 ---
 
 ## 🧩 How It Works
 
-### Module Federation
+1. Remote exposes components with `ModuleFederationPlugin`.
+2. Host dynamically imports these components with `React.lazy`.
+3. At runtime, Webpack loads them from the remote server!
 
-Module Federation allows you to **expose** and **consume** modules across different applications without needing to rely on a centralized monolith. This enables true micro-frontend architecture, where each app can evolve independently.
-
-- **Exposing Modules**: In the remote application, you expose components using the `exposes` property of the `ModuleFederationPlugin`.
-- **Consuming Modules**: In the host application, you dynamically import the exposed modules using `React.lazy()`.
-
-For example, the **remote** app might expose a component like `RemoteComponent`:
-
-```ts
-exposes: {
-  './RemoteComponent': './src/components/RemoteComponent',
-}
-```
-
-The **host** app can then consume this component as follows:
-
-```ts
-const RemoteComponent = React.lazy(() => import("remoteApp/RemoteComponent"));
-```
+> This makes each app independently deployable while still being integrated.
 
 ---
 
-## 🌱 Development Workflow
+## 🧠 Dev Workflow Tips
 
-1. **Start Host**: Run the host application to see how it consumes remote modules.
-2. **Start Remote**: Run the remote application and make sure it exposes components that the host can dynamically import.
-3. **Add New Exposes**: To add more modules to the remote application, simply add them to the `exposes` object in the `ModuleFederationPlugin` configuration.
-4. **Add New Consumers**: In the host application, add `React.lazy()` imports for new exposed components.
+1. ✅ Start **host** and **remote** apps.
+2. 🛠️ Add new components in the remote and expose them.
+3. 🧲 Lazy load new components in the host.
+4. 🔒 Use middleware to secure remote in non-dev environments.
+5. 🚀 Deploy independently!
 
 ---
 
-<!-- ## 📝 Contributing
+## 🧪 Example Error Handling
 
-We welcome contributions to this repository. If you'd like to contribute, follow these steps:
+If the remote app fails to load, avoid crashing the app:
 
-1. Fork the repository.
-2. Clone your fork to your local machine.
-3. Create a new branch for your feature/fix.
-4. Make your changes and run the tests.
-5. Submit a pull request.
+```tsx
+<Suspense fallback={<div>Loading Remote Component...</div>}>
+  <ErrorBoundary fallback={<div>Failed to load remote component.</div>}>
+    <RemoteComponent />
+  </ErrorBoundary>
+</Suspense>
+```
 
---- -->
+> Wrap lazy imports in an error boundary for safety 🚧
+
+---
+
+## 💬 Questions or Feedback?
+
+Feel free to open issues, submit PRs, or just ⭐️ the repo if you like it!
+
+---
