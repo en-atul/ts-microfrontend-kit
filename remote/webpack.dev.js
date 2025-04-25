@@ -1,5 +1,3 @@
-const { merge } = require("webpack-merge");
-const common = require("./webpack.common");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
 const deps = require("./package.json").dependencies;
@@ -18,19 +16,12 @@ for (let i = 0; i < REMOTES.length; i++) {
   remotes[REMOTES[i].split("@")[0]] = REMOTES[i];
 }
 
-module.exports = merge(common, {
+module.exports = {
   mode: "development",
   devtool: "cheap-module-source-map",
   output: {
     publicPath: configs.PUBLIC_PATH,
   },
-  devServer: {
-    port: configs.PORT,
-    hot: true,
-    open: true,
-    historyApiFallback: true,
-  },
-
   plugins: [
     new ModuleFederationPlugin({
       name: configs.appName,
@@ -55,4 +46,4 @@ module.exports = merge(common, {
     }),
     new ReactRefreshWebpackPlugin(),
   ],
-});
+};
